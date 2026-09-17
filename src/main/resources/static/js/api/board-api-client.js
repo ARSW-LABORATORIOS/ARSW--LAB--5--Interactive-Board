@@ -1,4 +1,15 @@
-// Placeholder de Nicolás (REST/errores). Mantener los nombres de función si se reescribe.
+/**
+ * BoardApiClient — único punto de acceso HTTP del cliente.
+ * Ningún otro módulo debe ejecutar fetch directamente.
+ *
+ * Funciones expuestas:
+ *   createBoard(name)            → POST /api/boards
+ *   loadBoard(boardId)           → GET  /api/boards/{boardId}
+ *   saveBoard(boardId, board)    → PUT  /api/boards/{boardId}
+ *
+ * Errores HTTP no exitosos se convierten en ApiClientError con
+ * status, code y message listos para que BoardApp los muestre.
+ */
 
 const BASE_URL = '/api/boards';
 
