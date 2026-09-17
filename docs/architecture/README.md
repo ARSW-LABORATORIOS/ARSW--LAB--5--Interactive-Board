@@ -1,4 +1,4 @@
-# Architecture Evidence — Lab 04
+# Architecture Evidence — Lab 05
 
 1. **ArchiMate Application View**
 
@@ -7,7 +7,7 @@
 2. **Class diagram**
 
 
-![Class Diagram](classdiagram.png)
+![Class Diagram](classdiagramLAB5.png)
 ## Quality rule
 
 The diagrams must describe the code that is actually delivered. Avoid decorative boxes and avoid generated diagrams containing every framework class.

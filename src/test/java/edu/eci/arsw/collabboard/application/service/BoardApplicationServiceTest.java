@@ -55,4 +55,112 @@ class BoardApplicationServiceTest {
 
         assertNotEquals(b1.id(), b2.id());
     }
+
+    @Test
+    void shouldReplaceBoardWithValidConnector() {
+        Board created = service.createBoard("Connector Board");
+
+        BoardElement source = new BoardElement(
+                "e1", ElementType.RECTANGLE, 10, 10, 100, 50, ""
+        );
+
+        BoardElement target = new BoardElement(
+                "e2", ElementType.RECTANGLE, 200, 10, 100, 50, ""
+        );
+
+        BoardElement connector = new BoardElement(
+                "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                "e1", "e2"
+        );
+
+        Board replaced = service.replaceBoard(
+                created.id(),
+                "Connector Board",
+                List.of(source, target, connector)
+        );
+
+        assertEquals(3, replaced.elements().size());
+        assertEquals(ElementType.CONNECTOR, replaced.elements().get(2).type());
+        assertEquals("e1", replaced.elements().get(2).sourceId());
+        assertEquals("e2", replaced.elements().get(2).targetId());
+    }
+
+    @Test
+    void shouldRejectConnectorWithMissingSource() {
+        Board created = service.createBoard("Connector Board");
+
+        BoardElement target = new BoardElement(
+                "e2", ElementType.RECTANGLE, 200, 10, 100, 50, ""
+        );
+
+        BoardElement connector = new BoardElement(
+                "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                "missing", "e2"
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.replaceBoard(
+                        created.id(),
+                        "Connector Board",
+                        List.of(target, connector)
+                )
+        );
+    }
+
+    @Test
+    void shouldRejectConnectorWithMissingTarget() {
+        Board created = service.createBoard("Connector Board");
+
+        BoardElement source = new BoardElement(
+                "e1", ElementType.RECTANGLE, 10, 10, 100, 50, ""
+        );
+
+        BoardElement connector = new BoardElement(
+                "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                "e1", "missing"
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.replaceBoard(
+                        created.id(),
+                        "Connector Board",
+                        List.of(source, connector)
+                )
+        );
+    }
+
+    @Test
+    void shouldRejectConnectorWithSameSourceAndTarget() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardElement(
+                        "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                        "e1", "e1"
+                )
+        );
+    }
+
+    @Test
+    void shouldRejectConnectorWithoutSource() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardElement(
+                        "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                        null, "e2"
+                )
+        );
+    }
+
+    @Test
+    void shouldRejectConnectorWithoutTarget() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardElement(
+                        "c1", ElementType.CONNECTOR, 0, 0, 0, 0, "",
+                        "e1", null
+                )
+        );
+    }
 }

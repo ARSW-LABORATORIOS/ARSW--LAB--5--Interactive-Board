@@ -59,7 +59,14 @@ export function moveElement(state, elementId, x, y) {
 
 export function deleteElement(state, elementId) {
     if (!state.board) return;
-    state.board.elements = state.board.elements.filter((el) => el.id !== elementId);
+
+    state.board.elements = state.board.elements.filter(
+        (el) =>
+            el.id !== elementId &&
+            el.sourceId !== elementId &&
+            el.targetId !== elementId
+    );
+
     if (state.selectedElementId === elementId) {
         state.selectedElementId = null;
     }
