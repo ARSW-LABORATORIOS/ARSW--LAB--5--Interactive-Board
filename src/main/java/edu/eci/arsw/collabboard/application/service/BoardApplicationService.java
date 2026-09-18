@@ -4,6 +4,7 @@ import edu.eci.arsw.collabboard.application.exception.BoardNotFoundException;
 import edu.eci.arsw.collabboard.application.port.out.BoardRepository;
 import edu.eci.arsw.collabboard.domain.model.Board;
 import edu.eci.arsw.collabboard.domain.model.BoardElement;
+import edu.eci.arsw.collabboard.domain.model.ElementType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +33,26 @@ public class BoardApplicationService {
         if (!repository.existsById(boardId)) {
             throw new BoardNotFoundException(boardId);
         }
-        Board updated = new Board(boardId, name, elements);
+
+        List<BoardElement> safeElements = elements == null ? List.of() : elements;
+
+        for (BoardElement element : safeElements) {
+            if (element.type() == ElementType.CONNECTOR) {
+                boolean sourceExists = safeElements.stream()
+                        .anyMatch(e -> e.id().equals(element.sourceId()));
+
+                boolean targetExists = safeElements.stream()
+                        .anyMatch(e -> e.id().equals(element.targetId()));
+
+                if (!sourceExists || !targetExists) {
+                    throw new IllegalArgumentException(
+                            "Connector sourceId and targetId must reference existing elements"
+                    );
+                }
+            }
+        }
+
+        Board updated = new Board(boardId, name, safeElements);
         return repository.save(updated);
     }
 }
